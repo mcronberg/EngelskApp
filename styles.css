@@ -91,6 +91,21 @@ h1 {
   align-items: center;
 }
 
+.controls label {
+  font-weight: 700;
+}
+
+.controls select {
+  border: 0;
+  border-radius: 12px;
+  padding: 0.42rem 0.62rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ink);
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(19, 32, 58, 0.12);
+}
+
 .score {
   margin: 0;
   padding: 0.32rem 0.62rem;

@@ -1,15 +1,126 @@
 const items = [
-  { word: "dog", icon: "fa-dog" },
-  { word: "cat", icon: "fa-cat" },
-  { word: "apple", icon: "fa-apple-whole" },
-  { word: "ice cream", icon: "fa-ice-cream" },
-  { word: "book", icon: "fa-book" },
-  { word: "car", icon: "fa-car" },
-  { word: "ball", icon: "fa-futbol" },
-  { word: "sun", icon: "fa-sun" },
-  { word: "house", icon: "fa-house" },
-  { word: "fish", icon: "fa-fish" }
+  {
+    key: "dog",
+    icon: "fa-dog",
+    words: { da: "hund", en: "dog", de: "Hund", es: "perro" }
+  },
+  {
+    key: "cat",
+    icon: "fa-cat",
+    words: { da: "kat", en: "cat", de: "Katze", es: "gato" }
+  },
+  {
+    key: "apple",
+    icon: "fa-apple-whole",
+    words: { da: "aeble", en: "apple", de: "Apfel", es: "manzana" }
+  },
+  {
+    key: "ice-cream",
+    icon: "fa-ice-cream",
+    words: { da: "is", en: "ice cream", de: "Eis", es: "helado" }
+  },
+  {
+    key: "book",
+    icon: "fa-book",
+    words: { da: "bog", en: "book", de: "Buch", es: "libro" }
+  },
+  {
+    key: "car",
+    icon: "fa-car",
+    words: { da: "bil", en: "car", de: "Auto", es: "coche" }
+  },
+  {
+    key: "ball",
+    icon: "fa-futbol",
+    words: { da: "bold", en: "ball", de: "Ball", es: "pelota" }
+  },
+  {
+    key: "sun",
+    icon: "fa-sun",
+    words: { da: "sol", en: "sun", de: "Sonne", es: "sol" }
+  },
+  {
+    key: "house",
+    icon: "fa-house",
+    words: { da: "hus", en: "house", de: "Haus", es: "casa" }
+  },
+  {
+    key: "fish",
+    icon: "fa-fish",
+    words: { da: "fisk", en: "fish", de: "Fisch", es: "pez" }
+  }
 ];
+
+const locales = {
+  da: {
+    title: "Ord-match",
+    subtitle: "Traek ord til ikoner, eller ikoner til ord.",
+    wordsHeading: "Ord",
+    iconsHeading: "Ikoner",
+    score: "Score",
+    speakOn: "Oplaesning: Til",
+    speakOff: "Oplaesning: Fra",
+    soundOn: "Lyd: Til",
+    soundOff: "Lyd: Fra",
+    reset: "Spil igen",
+    matchAll: "Match alle {count} ord.",
+    goodContinue: "Flot! Fortsaet.",
+    goodDone: "Godt klaret!",
+    tryAgain: "Proev igen.",
+    speechLang: "da-DK"
+  },
+  en: {
+    title: "Word Match",
+    subtitle: "Drag words to icons, or icons to words.",
+    wordsHeading: "Words",
+    iconsHeading: "Icons",
+    score: "Score",
+    speakOn: "Speech: On",
+    speakOff: "Speech: Off",
+    soundOn: "Sound: On",
+    soundOff: "Sound: Off",
+    reset: "Play again",
+    matchAll: "Match all {count} words.",
+    goodContinue: "Nice! Keep going.",
+    goodDone: "Great job!",
+    tryAgain: "Try again.",
+    speechLang: "en-US"
+  },
+  de: {
+    title: "Wort-Match",
+    subtitle: "Ziehe Woerter zu Symbolen oder Symbole zu Woertern.",
+    wordsHeading: "Woerter",
+    iconsHeading: "Symbole",
+    score: "Punktzahl",
+    speakOn: "Vorlesen: Ein",
+    speakOff: "Vorlesen: Aus",
+    soundOn: "Ton: Ein",
+    soundOff: "Ton: Aus",
+    reset: "Neu spielen",
+    matchAll: "Ordne alle {count} Woerter zu.",
+    goodContinue: "Gut! Weiter so.",
+    goodDone: "Super gemacht!",
+    tryAgain: "Versuch es noch einmal.",
+    speechLang: "de-DE"
+  },
+  es: {
+    title: "Emparejar palabras",
+    subtitle: "Arrastra palabras a iconos o iconos a palabras.",
+    wordsHeading: "Palabras",
+    iconsHeading: "Iconos",
+    score: "Puntuacion",
+    speakOn: "Lectura: Si",
+    speakOff: "Lectura: No",
+    soundOn: "Sonido: Si",
+    soundOff: "Sonido: No",
+    reset: "Jugar otra vez",
+    matchAll: "Empareja las {count} palabras.",
+    goodContinue: "Bien! Sigue.",
+    goodDone: "Muy bien!",
+    tryAgain: "Intentalo de nuevo.",
+    speechLang: "es-ES"
+  }
+};
 
 const wordList = document.getElementById("wordList");
 const iconGrid = document.getElementById("iconGrid");
@@ -18,14 +129,27 @@ const statusText = document.getElementById("statusText");
 const resetBtn = document.getElementById("resetBtn");
 const muteBtn = document.getElementById("muteBtn");
 const speakBtn = document.getElementById("speakBtn");
+const languageSelect = document.getElementById("languageSelect");
 const confettiLayer = document.getElementById("confettiLayer");
+const titleEl = document.querySelector(".app-header h1");
+const subtitleEl = document.querySelector(".app-header p");
+const laneHeadings = document.querySelectorAll(".lane h2");
 
 let matches = 0;
 let muted = false;
 let speechOn = true;
+let currentLanguage = "da";
 let selectedWord = null;
 let selectedIcon = null;
 let lastSpokenWord = "";
+
+function localeText() {
+  return locales[currentLanguage] || locales.da;
+}
+
+function format(template, params) {
+  return String(template).replace(/\{(\w+)\}/g, (_, key) => String(params[key] ?? ""));
+}
 
 function shuffled(arr) {
   const copy = [...arr];
@@ -36,13 +160,14 @@ function shuffled(arr) {
   return copy;
 }
 
-function cardBase(type, word) {
+function cardBase(type, key, label) {
   const el = document.createElement("button");
   el.type = "button";
   el.className = `card ${type}`;
   el.draggable = true;
-  el.dataset.word = word;
-  el.setAttribute("aria-label", `${type} ${word}`);
+  el.dataset.key = key;
+  el.dataset.label = label;
+  el.setAttribute("aria-label", `${type} ${label}`);
   return el;
 }
 
@@ -51,7 +176,8 @@ function setStatus(message) {
 }
 
 function setScore() {
-  scoreText.textContent = `Score: ${matches} / ${items.length}`;
+  const text = localeText();
+  scoreText.textContent = `${text.score}: ${matches} / ${items.length}`;
 }
 
 function playTone(kind) {
@@ -106,11 +232,30 @@ function speakWord(word) {
 
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
+  utterance.lang = localeText().speechLang;
   utterance.rate = 0.88;
   utterance.pitch = 1;
   window.speechSynthesis.speak(utterance);
   lastSpokenWord = key;
+}
+
+function refreshTexts() {
+  const text = localeText();
+  if (titleEl) {
+    titleEl.textContent = text.title;
+  }
+  if (subtitleEl) {
+    subtitleEl.textContent = text.subtitle;
+  }
+  if (laneHeadings[0]) {
+    laneHeadings[0].textContent = text.wordsHeading;
+  }
+  if (laneHeadings[1]) {
+    laneHeadings[1].textContent = text.iconsHeading;
+  }
+  speakBtn.textContent = speechOn ? text.speakOn : text.speakOff;
+  muteBtn.textContent = muted ? text.soundOff : text.soundOn;
+  resetBtn.textContent = text.reset;
 }
 
 function launchConfetti() {
@@ -168,10 +313,10 @@ function completePair(wordCard, iconCard) {
   playTone("ok");
 
   if (matches === items.length) {
-    setStatus("Godt klaret!");
+    setStatus(localeText().goodDone);
     launchConfetti();
   } else {
-    setStatus("Flot! Fortsæt.");
+    setStatus(localeText().goodContinue);
   }
 }
 
@@ -184,12 +329,12 @@ function tryMatch(wordCard, iconCard) {
     return;
   }
 
-  const isMatch = wordCard.dataset.word === iconCard.dataset.word;
+  const isMatch = wordCard.dataset.key === iconCard.dataset.key;
   if (isMatch) {
     completePair(wordCard, iconCard);
   } else {
     playTone("bad");
-    setStatus("Prøv igen.");
+    setStatus(localeText().tryAgain);
     markWrong(wordCard, iconCard);
   }
 
@@ -199,7 +344,7 @@ function tryMatch(wordCard, iconCard) {
 function bindDnD(card, type) {
   card.addEventListener("dragstart", (event) => {
     event.dataTransfer.setData("text/plain", JSON.stringify({
-      word: card.dataset.word,
+      key: card.dataset.key,
       sourceType: type
     }));
   });
@@ -230,11 +375,11 @@ function bindDnD(card, type) {
       return;
     }
 
-    if (!payload.word || payload.sourceType === type) {
+    if (!payload.key || payload.sourceType === type) {
       return;
     }
 
-    const sourceSelector = `.card.${payload.sourceType}[data-word="${payload.word}"]`;
+    const sourceSelector = `.card.${payload.sourceType}[data-key="${payload.key}"]`;
     const sourceCard = document.querySelector(sourceSelector);
     if (!sourceCard) {
       return;
@@ -252,7 +397,7 @@ function bindSelectable(card, type) {
       return;
     }
 
-    speakWord(card.dataset.word);
+    speakWord(card.dataset.label);
 
     if (type === "word") {
       if (selectedWord && selectedWord !== card) {
@@ -293,19 +438,22 @@ function render() {
     confettiLayer.innerHTML = "";
   }
   setScore();
-  setStatus("Match alle 10 ord.");
+  refreshTexts();
+  setStatus(format(localeText().matchAll, { count: items.length }));
 
   shuffled(items).forEach((entry) => {
-    const card = cardBase("word", entry.word);
-    card.textContent = entry.word;
+    const label = entry.words[currentLanguage] || entry.words.en;
+    const card = cardBase("word", entry.key, label);
+    card.textContent = label;
     bindDnD(card, "word");
     bindSelectable(card, "word");
     wordList.appendChild(card);
   });
 
   shuffled(items).forEach((entry) => {
-    const card = cardBase("icon", entry.word);
-    card.innerHTML = `<i class="fa-solid ${entry.icon}" aria-hidden="true"></i><span>${entry.word}</span>`;
+    const label = entry.words[currentLanguage] || entry.words.en;
+    const card = cardBase("icon", entry.key, label);
+    card.innerHTML = `<i class="fa-solid ${entry.icon}" aria-hidden="true"></i>`;
     bindDnD(card, "icon");
     bindSelectable(card, "icon");
     iconGrid.appendChild(card);
@@ -314,18 +462,27 @@ function render() {
 
 muteBtn.addEventListener("click", () => {
   muted = !muted;
-  muteBtn.textContent = muted ? "Lyd: Fra" : "Lyd: Til";
+  muteBtn.textContent = muted ? localeText().soundOff : localeText().soundOn;
   muteBtn.setAttribute("aria-pressed", String(muted));
 });
 
 speakBtn.addEventListener("click", () => {
   speechOn = !speechOn;
-  speakBtn.textContent = speechOn ? "Oplæsning: Til" : "Oplæsning: Fra";
+  speakBtn.textContent = speechOn ? localeText().speakOn : localeText().speakOff;
   speakBtn.setAttribute("aria-pressed", String(speechOn));
 
   if (!speechOn && "speechSynthesis" in window) {
     window.speechSynthesis.cancel();
   }
+});
+
+languageSelect.addEventListener("change", (event) => {
+  const value = event.target.value;
+  if (!locales[value]) {
+    return;
+  }
+  currentLanguage = value;
+  render();
 });
 
 resetBtn.addEventListener("click", render);
