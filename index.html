@@ -1,55 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ord Match</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Nunito:wght@500;700&display=swap" rel="stylesheet" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ord Match</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Nunito:wght@500;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
-  <main class="app-shell">
-    <header class="app-header">
-      <h1>Ord-match</h1>
-      <p>Træk ord til ikoner, eller ikoner til ord.</p>
-      <div class="controls" aria-label="Game controls">
-        <label for="languageSelect">Sprog:</label>
-        <select id="languageSelect" aria-label="Vælg sprog">
-          <option value="da">Dansk</option>
-          <option value="en">English</option>
-          <option value="de">Deutsch</option>
-          <option value="es">Español</option>
-        </select>
-        <p class="score" id="scoreText">Score: 0 / 10</p>
-        <button type="button" id="speakBtn" aria-pressed="true">Oplæsning: Til</button>
-        <button type="button" id="muteBtn" aria-pressed="false">Lyd: Til</button>
-        <button type="button" id="resetBtn">Spil igen</button>
-      </div>
-    </header>
+    <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+    <main class="app-shell">
+        <header class="app-header">
+            <h1>Ord-match</h1>
+            <p>Træk ord til ikoner, eller ikoner til ord.</p>
+            <div class="controls" aria-label="Game controls">
+                <label for="languageSelect">Sprog:</label>
+                <select id="languageSelect" aria-label="Vælg sprog">
+                    <option value="da">Dansk</option>
+                    <option value="en">English</option>
+                    <option value="de">Deutsch</option>
+                    <option value="es">Español</option>
+                </select>
+                <p class="score" id="scoreText">Score: 0 / 10</p>
+                <button type="button" id="speakBtn" aria-pressed="true">Oplæsning: Til</button>
+                <button type="button" id="muteBtn" aria-pressed="false">Lyd: Til</button>
+                <button type="button" id="resetBtn">Spil igen</button>
+            </div>
+        </header>
 
-    <section class="board" aria-label="Matching game board">
-      <div class="lane">
-        <h2>Ord</h2>
-        <div class="word-list" id="wordList"></div>
-      </div>
-      <div class="lane">
-        <h2>Ikoner</h2>
-        <div class="icon-grid" id="iconGrid"></div>
-      </div>
-    </section>
+        <section class="board" aria-label="Matching game board">
+            <div class="lane">
+                <h2>Ord</h2>
+                <div class="word-list" id="wordList"></div>
+            </div>
+            <div class="lane">
+                <h2>Ikoner</h2>
+                <div class="icon-grid" id="iconGrid"></div>
+            </div>
+        </section>
 
-    <p class="status" id="statusText" role="status" aria-live="polite">Match alle 10 ord.</p>
-  </main>
+        <p class="status" id="statusText" role="status" aria-live="polite">Match alle 10 ord.</p>
+    </main>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>
